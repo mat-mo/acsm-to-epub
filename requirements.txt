@@ -1,0 +1,4 @@
+lxml
+pycryptodome
+oscrypto
+asn1crypto

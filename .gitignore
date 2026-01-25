@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+*.pyc
+*.acsm
+*.epub
+*.log
+fulfillment_response.xml
+activation.xml
+device.xml
+devicesalt
