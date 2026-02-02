@@ -61,8 +61,42 @@ def main():
 
     print(f"Processing {acsm_file}...")
     
-    # ... (rest of the fulfillment logic)
+    success, response_str = libadobeFulfill.fulfill(acsm_file)
+    if not success:
+        print(f"Fulfillment failed: {response_str}")
+        sys.exit(1)
+
+    try:
+        response = etree.fromstring(response_str.encode('utf-8'))
+    except Exception as e:
+        print(f"Error parsing fulfillment response: {e}")
+        sys.exit(1)
+
+    ns = {'adept': 'http://ns.adobe.com/adept', 'dc': 'http://purl.org/dc/elements/1.1/'}
     
+    resource = response.find('.//adept:fulfillmentResult', ns)
+    if resource is None:
+        print("Error: Invalid response structure (no fulfillmentResult)")
+        # Check for error tag
+        error = response.find('.//adept:error', ns)
+        if error is not None:
+             print(f"Server returned error: {error.get('data', 'Unknown error')}")
+        else:
+             print(response_str)
+        sys.exit(1)
+
+    # Extract metadata
+    title_node = resource.find('.//dc:title', ns)
+    title = title_node.text if title_node is not None else "Unknown Book"
+    
+    # Extract download URL
+    src_node = resource.find('.//adept:resourceItemInfo/adept:src', ns)
+    if src_node is None:
+        print("Error: Could not find download URL in response")
+        sys.exit(1)
+        
+    download_url = src_node.text
+
     # Sanitize title for filename
     safe_title = "".join([c for c in title if c.isalpha() or c.isdigit() or c==' ']).strip()
     if not safe_title:
