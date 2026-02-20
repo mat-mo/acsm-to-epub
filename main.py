@@ -152,8 +152,8 @@ def main():
         
         if res == 0:
             print(f"Successfully created: {decrypted_filename}")
-            # Optional: remove encrypted file
-            # os.remove(encrypted_filename)
+            # Remove encrypted file
+            os.remove(encrypted_filename)
         elif res == 1:
             print(f"The book '{decrypted_filename}' appears to be already DRM-free.")
             print(f"Renaming {encrypted_filename} to {decrypted_filename}...")
